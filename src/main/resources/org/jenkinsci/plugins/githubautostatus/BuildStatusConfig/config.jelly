@@ -15,6 +15,9 @@
             <f:entry title="InfluxDB Retention policy" field="influxDbRetentionPolicy" name="influxDbRetentionPolicy">
                 <f:textbox />
             </f:entry>
+            <f:entry title="Job name filter for notifying to InfluxDB" field="jobNameFilter" name="jobNameFilter">
+                <f:textbox />
+            </f:entry>
             <f:entry title="Ignore sending coverage" field="ignoreSendingTestCoverageToInflux">
                 <f:checkbox default="true" checked="${instance.ignoreSendingTestCoverageToInflux}"/>
             </f:entry>

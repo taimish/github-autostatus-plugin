@@ -53,6 +53,7 @@ public class InfluxDbNotifierConfig extends AbstractNotifierConfig {
     private String influxDbDatabase;
     private String influxDbCredentialsId;
     private String influxDbRetentionPolicy;
+    private String jobNameFilter;
     private boolean ignoreSendingTestCoverageToInflux;
     private boolean ignoreSendingTestResultsToInflux;
     private Integer schemaVersion;
@@ -150,8 +151,7 @@ public class InfluxDbNotifierConfig extends AbstractNotifierConfig {
     @CheckForNull
     public UsernamePasswordCredentials getCredentials() {
         return !StringUtils.isEmpty(influxDbCredentialsId) ?
-                BuildStatusConfig.getCredentials(UsernamePasswordCredentials.class,
-                        influxDbCredentialsId) :
+                BuildStatusConfig.getCredentials(UsernamePasswordCredentials.class, influxDbCredentialsId) :
                 null;
     }
 
@@ -162,6 +162,15 @@ public class InfluxDbNotifierConfig extends AbstractNotifierConfig {
      */
     public String getInfluxDbRetentionPolicy() {
         return influxDbRetentionPolicy;
+    }
+
+    /**
+     * Gets the pipeline name filter.
+     *
+     * @return the filter expression (regexp)
+     */
+    public String getjobNameFilter() {
+        return jobNameFilter;
     }
 
     public InfluxDbNotifierSchemas.SchemaInfo getSchema() {
@@ -208,6 +217,7 @@ public class InfluxDbNotifierConfig extends AbstractNotifierConfig {
             influxDbNotifierConfig.influxDbDatabase = config.getInfluxDbDatabase();
             influxDbNotifierConfig.influxDbCredentialsId = config.getCredentialsId();
             influxDbNotifierConfig.influxDbRetentionPolicy = config.getInfluxDbRetentionPolicy();
+            influxDbNotifierConfig.jobNameFilter = config.getJobNameFilter();
             influxDbNotifierConfig.ignoreSendingTestCoverageToInflux = config.getIgnoreSendingTestCoverageToInflux();
             influxDbNotifierConfig.ignoreSendingTestResultsToInflux = config.getIgnoreSendingTestResultsToInflux();
             influxDbNotifierConfig.schemaVersion = config.getDbVersion();

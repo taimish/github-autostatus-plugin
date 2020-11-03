@@ -77,6 +77,7 @@ public class BuildStatusConfig extends GlobalConfiguration {
     @Deprecated
     private transient String influxDbPassword;
     private String influxDbRetentionPolicy;
+    private String jobNameFilter;
     private boolean enableInfluxDb;
     private boolean disableGithub;
     private boolean enableStatsd;
@@ -389,6 +390,26 @@ public class BuildStatusConfig extends GlobalConfiguration {
     @DataBoundSetter
     public void setInfluxDbRetentionPolicy(String influxDbRetentionPolicy) {
         this.influxDbRetentionPolicy = influxDbRetentionPolicy;
+        save();
+    }
+
+    /**
+     * Gets the pipeline name filter.
+     *
+     * @return the filter expression (regexp)
+     */
+    public String getJobNameFilter() {
+        return jobNameFilter;
+    }
+
+    /**
+     * Sets the pipeline name filter.
+     *
+     * @param jobNameFilter the filter expression (regexp)
+     */
+    @DataBoundSetter
+    public void setJobNameFilter(String jobNameFilter) {
+        this.jobNameFilter = jobNameFilter;
         save();
     }
 

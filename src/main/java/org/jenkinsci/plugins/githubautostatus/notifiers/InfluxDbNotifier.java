@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Writes job and stage measurements to an InfluxDB REST API.
@@ -64,6 +66,8 @@ public class InfluxDbNotifier extends BuildNotifier {
     protected String influxDbUrlString;
     protected InfluxDbNotifierConfig config;
     protected transient String authorization;
+    protected Pattern jobNamePattern;
+    protected Matcher jobNameMatcher;
 
     /**
      * Constructor
@@ -74,6 +78,7 @@ public class InfluxDbNotifier extends BuildNotifier {
         if (StringUtils.isEmpty(config.getInfluxDbUrlString()) || StringUtils.isEmpty(config.getInfluxDbDatabase())) {
             return;
         }
+        Pattern jobNamePattern = Pattern.compile(config.getJobNameFilter(), Pattern.CASE_INSENSITIVE);
         String urlString = String.format("%s/write?db=%s", config.getInfluxDbUrlString(), config.getInfluxDbDatabase());
         try {
             UsernamePasswordCredentials credentials = config.getCredentials();
@@ -140,6 +145,8 @@ public class InfluxDbNotifier extends BuildNotifier {
      */
     @Override
     public void notifyBuildStageStatus(String jobName, BuildStage stageItem) {
+        if (!DoJobNameMatch(jobName))
+            return;
         if (stageItem.getBuildState() == BuildStage.State.Pending) {
             return;
         }
@@ -174,6 +181,8 @@ public class InfluxDbNotifier extends BuildNotifier {
     public void notifyFinalBuildStatus(BuildStage.State buildState, Map<String, Object> parameters) {
         Run<?, ?> run = (Run<?, ?>) parameters.get(BuildNotifierConstants.BUILD_OBJECT);
         String jobName = (String) parameters.getOrDefault(BuildNotifierConstants.JOB_NAME, BuildNotifierConstants.DEFAULT_STRING);
+        if (!DoJobNameMatch(jobName))
+            return;
         int passed = buildState == BuildStage.State.CompletedSuccess ? 1 : 0;
         long blockedDuration = BuildNotifierConstants.getLong(parameters, BuildNotifierConstants.BLOCKED_DURATION);
         int blocked = blockedDuration > 0 ? 1 : 0;
@@ -203,6 +212,11 @@ public class InfluxDbNotifier extends BuildNotifier {
         if (!this.config.getIgnoreSendingTestCoverageToInflux()) {
             notifyCoverage(jobName, (CodeCoverage) parameters.get(BuildNotifierConstants.COVERAGE_INFO), run);
         }
+    }
+
+    private boolean DoJobNameMatch(String jobName) {
+        Matcher jobNameMatcher = pattern.matcher(jobName);
+        return pipelineNameMatcher.find();
     }
 
     private void notifyCoverage(String jobName, @Nullable CodeCoverage coverageInfo, Run<?, ?> run) {
