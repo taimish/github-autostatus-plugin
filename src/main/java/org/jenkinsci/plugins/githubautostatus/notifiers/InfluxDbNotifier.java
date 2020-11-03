@@ -67,7 +67,6 @@ public class InfluxDbNotifier extends BuildNotifier {
     protected InfluxDbNotifierConfig config;
     protected transient String authorization;
     protected Pattern jobNamePattern;
-    protected Matcher jobNameMatcher;
 
     /**
      * Constructor
@@ -215,8 +214,8 @@ public class InfluxDbNotifier extends BuildNotifier {
     }
 
     private boolean DoJobNameMatch(String jobName) {
-        Matcher jobNameMatcher = pattern.matcher(jobName);
-        return pipelineNameMatcher.find();
+        Matcher jobNameMatcher = jobNamePattern.matcher(jobName);
+        return jobNameMatcher.find();
     }
 
     private void notifyCoverage(String jobName, @Nullable CodeCoverage coverageInfo, Run<?, ?> run) {
